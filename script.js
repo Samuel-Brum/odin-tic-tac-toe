@@ -54,7 +54,7 @@ function tabuleiro() {
 function controladorDoJogo() {
   tabuleiro = tabuleiro();
   tabuleiro.resetaTabuleiro();
-  let rodada = 1;
+  let rodada = 0;
   let fimDeJogo = 0;
   
 
@@ -73,8 +73,11 @@ function controladorDoJogo() {
 
   const lerJogadorAtivo = () => jogadorAtivo;
 
-  const reset = () => tabuleiro.resetaTabuleiro();
-
+  const reset = () => {
+    tabuleiro.resetaTabuleiro();
+    rodada = 0;
+    fimDeJogo = 0;
+  }
   const trocarJogador = () => {
     jogadorAtivo === jogadores[0] ? jogadorAtivo = jogadores[1] :
                                     jogadorAtivo = jogadores[0];
@@ -85,12 +88,16 @@ function controladorDoJogo() {
     @param casa: qual casa a ser marcada
   */
   const jogarRodada = (linha, coluna) => {
-    if (tabuleiro.marcarCasa(linha, coluna, jogadorAtivo.marcador) === 0) {
-      console.log(`Marcando casa [${linha}][${coluna}] no tabuleiro\n`);
-      tabuleiro.imprimirTabuleiro();
-      rodada++;
-      verificarGanhador(tabuleiro.lerTabuleiro());
-      trocarJogador();
+    console.log(`Rodada: ${rodada}`);
+    if (fimDeJogo == 0){
+      if (tabuleiro.marcarCasa(linha, coluna, jogadorAtivo.marcador) === 0) {
+        console.log(`Marcando casa [${linha}][${coluna}] no tabuleiro\n`);
+        tabuleiro.imprimirTabuleiro();
+        rodada++;
+        verificarGanhador(tabuleiro.lerTabuleiro());
+        console.log(`Fim de jogo: ${fimDeJogo}`);
+        trocarJogador();
+      }
     }
   }
 
@@ -104,27 +111,29 @@ function controladorDoJogo() {
     for (let i = 0; i < linhas; i++) {
       if (tabuleiro[i][0] === tabuleiro[i][1] && tabuleiro[i][1] === tabuleiro[i][2]) {
         console.log(`Jogador ${lerJogadorAtivo().nome} ganhou!`)
-        return lerJogadorAtivo();
         fimDeJogo++;
+        return lerJogadorAtivo();
       } 
       if (tabuleiro[0][i] === tabuleiro[1][i] && tabuleiro[1][i] === tabuleiro[2][i]) {
         console.log(`Jogador ${lerJogadorAtivo().nome} ganhou!`)
-        return lerJogadorAtivo();
         fimDeJogo++;
+        return lerJogadorAtivo();
       }
     }
     if (tabuleiro[0][0] === tabuleiro[1][1] && tabuleiro[1][1] === tabuleiro[2][2]){
       console.log(`Jogador ${lerJogadorAtivo().nome} ganhou!`)
-      return lerJogadorAtivo();
       fimDeJogo++;
+      return lerJogadorAtivo();
     }
     if (tabuleiro[0][2] === tabuleiro[1][1] && tabuleiro[1][1] === tabuleiro[2][0]) {
       console.log(`Jogador ${lerJogadorAtivo().nome} ganhou!`)
+      fimDeJogo++;
       return lerJogadorAtivo();
-      fimDeJogo++
     }
     if (rodada == 9) {
-      console.log("O jogo empatou!")
+      fimDeJogo++;
+      console.log('O jogo empatou!')
+      return 'empate';
     }
     return 1;
   }
@@ -135,6 +144,7 @@ function controladorDoJogo() {
     trocarJogador,
     jogarRodada,
     verificarGanhador,
+    fimDeJogo,
   }
 }
 
@@ -145,13 +155,21 @@ function screeenControler () {
   casas.forEach(casa => {
     casa.addEventListener('click', function handleClick(event) {
       const param = event.target.id;
-      event.target.innerHTML = jogo.lerJogadorAtivo().marcador;
+      if (jogo.fimDeJogo === 0) {
+        event.target.innerHTML = jogo.lerJogadorAtivo().marcador;
+      }
       jogo.jogarRodada(param[0], param[1]);      
     });
   });
 
   const reset = document.getElementById('reset');
-  reset.addEventListener('click', jogo.reset());
+  reset.addEventListener('click', function resetaJogo(event) {
+    casas.forEach(casa => {
+      casa.innerHTML = '';
+    });
+    jogo.reset();
+
+  });
 }
 
 controlador = screeenControler();
