@@ -73,6 +73,8 @@ function controladorDoJogo() {
 
   const lerJogadorAtivo = () => jogadorAtivo;
 
+  const lerFimDeJogo = () => fimDeJogo;
+
   const reset = () => {
     tabuleiro.resetaTabuleiro();
     rodada = 0;
@@ -144,18 +146,19 @@ function controladorDoJogo() {
     trocarJogador,
     jogarRodada,
     verificarGanhador,
-    fimDeJogo,
+    lerFimDeJogo,
   }
 }
 
-function screeenControler () {
+function controladoDaTela () {
   const jogo = controladorDoJogo();
   const casas = document.querySelectorAll('.caixa');
 
   casas.forEach(casa => {
     casa.addEventListener('click', function handleClick(event) {
       const param = event.target.id;
-      if (jogo.fimDeJogo === 0) {
+      console.log(jogo.lerFimDeJogo());
+      if (jogo.lerFimDeJogo() === 0) {
         event.target.innerHTML = jogo.lerJogadorAtivo().marcador;
       }
       jogo.jogarRodada(param[0], param[1]);      
@@ -172,4 +175,4 @@ function screeenControler () {
   });
 }
 
-controlador = screeenControler();
+controlador = controladoDaTela();
