@@ -51,6 +51,11 @@ function tabuleiro() {
   };
 }
 
+/*
+  @brief função fábrica de lógicas para jogo da velha
+  @return reset, lerJogadorAtivo, trocarJogador, jogarRodada, verificarGanhador,
+    lerFimDeJogo, lerTabuleiro
+*/
 function controladorDoJogo() {
   tabuleiro = tabuleiro();
   tabuleiro.resetaTabuleiro();
@@ -74,6 +79,8 @@ function controladorDoJogo() {
   const lerJogadorAtivo = () => jogadorAtivo;
 
   const lerFimDeJogo = () => fimDeJogo;
+  
+  const lerTabuleiro = () => tabuleiro;
 
   const reset = () => {
     tabuleiro.resetaTabuleiro();
@@ -114,30 +121,30 @@ function controladorDoJogo() {
       if (tabuleiro[i][0] === tabuleiro[i][1] && tabuleiro[i][1] === tabuleiro[i][2]) {
         console.log(`Jogador ${lerJogadorAtivo().nome} ganhou!`)
         fimDeJogo++;
-        return lerJogadorAtivo();
+        return `Jogador ${lerJogadorAtivo().nome} ganhou!`;
       } 
       if (tabuleiro[0][i] === tabuleiro[1][i] && tabuleiro[1][i] === tabuleiro[2][i]) {
         console.log(`Jogador ${lerJogadorAtivo().nome} ganhou!`)
         fimDeJogo++;
-        return lerJogadorAtivo();
+        return `Jogador ${lerJogadorAtivo().nome} ganhou!`;
       }
     }
     if (tabuleiro[0][0] === tabuleiro[1][1] && tabuleiro[1][1] === tabuleiro[2][2]){
       console.log(`Jogador ${lerJogadorAtivo().nome} ganhou!`)
       fimDeJogo++;
-      return lerJogadorAtivo();
+      return `Jogador ${lerJogadorAtivo().nome} ganhou!`;
     }
     if (tabuleiro[0][2] === tabuleiro[1][1] && tabuleiro[1][1] === tabuleiro[2][0]) {
       console.log(`Jogador ${lerJogadorAtivo().nome} ganhou!`)
       fimDeJogo++;
-      return lerJogadorAtivo();
+      return `Jogador ${lerJogadorAtivo().nome} ganhou!`;
     }
     if (rodada == 9) {
       fimDeJogo++;
       console.log('O jogo empatou!')
       return 'empate';
     }
-    return 1;
+    return 0;
   }
 
   return {
@@ -147,10 +154,14 @@ function controladorDoJogo() {
     jogarRodada,
     verificarGanhador,
     lerFimDeJogo,
+    lerTabuleiro,
   }
 }
 
-function controladoDaTela () {
+/*
+  @brief controla o front end do jogo
+*/
+function controladorDaTela () {
   const jogo = controladorDoJogo();
   const casas = document.querySelectorAll('.caixa');
 
@@ -161,7 +172,13 @@ function controladoDaTela () {
       if (jogo.lerFimDeJogo() === 0) {
         event.target.innerHTML = jogo.lerJogadorAtivo().marcador;
       }
-      jogo.jogarRodada(param[0], param[1]);      
+
+      jogo.jogarRodada(param[0], param[1]); 
+
+      if ((jogo.lerFimDeJogo() != 0)) {
+        console.log(jogo.verificarGanhador(jogo.lerTabuleiro()));
+        document.getElementById('header').innerHTML = jogo.verificarGanhador(jogo.lerTabuleiro());
+      } 
     });
   });
 
@@ -171,8 +188,8 @@ function controladoDaTela () {
       casa.innerHTML = '';
     });
     jogo.reset();
-
+    document.getElementById('header').innerHTML = 'Tic Tac Toe';
   });
 }
 
-controlador = controladoDaTela();
+controlador = controladorDaTela();
